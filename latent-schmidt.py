@@ -1,7 +1,7 @@
 import random, itertools
 
 import numpy as np
-import scipy.linalg as LA
+import numpy.linalg as LA
 import matplotlib.pyplot as plt
 
 def jaccard_similarity(a,b):
@@ -21,7 +21,8 @@ topics = [['honey','badger','sniffles'],['honey','bunches','oats'],['cough','alp
 '''
 
 corpus = [topics[0]*5,topics[1]*5,topics[-1]*5,random.sample(list(itertools.chain(*topics)),3)*5]
-
+for document in corpus:
+	print ' '.join(document)
 
 topic_topic_similarities = np.array([[jaccard_similarity(topic_A,topic_B) for topic_A in topics] for topic_B in topics])
 corpus_topic_similarities = np.array([[jaccard_similarity(text,topic) for text in corpus] for topic in topics])

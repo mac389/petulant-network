@@ -1,0 +1,1 @@
+python lda.py -f ./data/sample_topics --alpha=0.5 --beta=0.5 -i 50 > ./data/lda_topics
