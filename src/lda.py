@@ -5,7 +5,11 @@
 # This code is available under the MIT License.
 # (c)2010-2011 Nakatani Shuyo / Cybozu Labs Inc.
 
-import numpy
+#Modified format of output Michael CHary (c) 2014
+
+import numpy, json, os
+
+from pprint import pprint
 
 class LDA:
     def __init__(self, K, alpha, beta, docs, V, smartinit=True):
@@ -77,8 +81,8 @@ class LDA:
 
 def lda_learning(lda, iteration, voca):
     pre_perp = lda.perplexity()
-    print "initial perplexity=%f" % pre_perp
-    for i in range(iteration):
+    #print "initial perplexity=%f" % pre_perp
+    '''for i in range(iteration):
         lda.inference()
         perp = lda.perplexity()
         print "-%d p=%f" % (i + 1, perp)
@@ -87,7 +91,7 @@ def lda_learning(lda, iteration, voca):
                 output_word_topic_dist(lda, voca)
                 pre_perp = None
             else:
-                pre_perp = perp
+                pre_perp = perp'''
     output_word_topic_dist(lda, voca)
 
 def output_word_topic_dist(lda, voca):
@@ -102,12 +106,17 @@ def output_word_topic_dist(lda, voca):
                 wordcount[z][x] = 1
 
     phi = lda.worddist()
- 	'''
-	for k in xrange(lda.K):
+    '''for k in xrange(lda.K):
         print "\n-- topic: %d (%d words)" % (k, zcount[k])
         for w in numpy.argsort(-phi[k])[:20]:
             print "%s: %f (%d)" % (voca[w], phi[k,w], wordcount[k].get(w,0))'''
-
+    structured_phis = {k:{voca[w]: phi[k,w] for w in numpy.argsort(-phi[k])[:20] 
+                          if wordcount[k].get(w,0)>1} for k in xrange(lda.K)}
+    pprint(structured_phis)
+    filename = './data/lda_topics.json'
+    if not os.path.exists(filename):
+	    json.dump(structured_phis,open(filename,'wb'))
+    
 def main():
     import optparse
     import vocabulary

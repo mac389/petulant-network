@@ -1,4 +1,4 @@
-import random, itertools
+import random, itertools,json
 
 import numpy as np
 import numpy.linalg as LA
@@ -13,19 +13,16 @@ def jaccard_similarity(a,b):
    1. Get topics from corpus using gensim
 '''
 
-topics = [['honey','badger','sniffles'],['honey','bunches','oats'],['cough','alpaca','llama']]
-
+topics = json.load(open('../data/lda_topics.json','rb'))
 
 '''
 	2. Project words onto topics, using Jaccard similarity
 '''
 
-corpus = [topics[0]*5,topics[1]*5,topics[-1]*5,random.sample(list(itertools.chain(*topics)),3)*5]
-for document in corpus:
-	print ' '.join(document)
+corpus = [line.strip() for line in open('../data/sample_topics','rb').read().splitlines()]
 
-topic_topic_similarities = np.array([[jaccard_similarity(topic_A,topic_B) for topic_A in topics] for topic_B in topics])
-corpus_topic_similarities = np.array([[jaccard_similarity(text,topic) for text in corpus] for topic in topics])
+topic_topic_similarities = np.array([[jaccard_similarity(topics[topic_A],topics[topic_B]) for topic_A in topics] for topic_B in topics])
+corpus_topic_similarities = np.array([[jaccard_similarity(text,topics[topic]) for text in corpus] for topic in topics])
 '''
    3. Gram-Schmidt Orthogonalize (SciPy) and, identify clusters in this space 
       --generalized eigenvalues are better
@@ -50,4 +47,4 @@ ax.set_ylabel('Piece of text')
 cbar = plt.colorbar(cax)
 cbar.set_label('Strength of projection')
 plt.tight_layout()
-plt.show()
+plt.savefig('../data/lda_projections.png',dpi=300)
